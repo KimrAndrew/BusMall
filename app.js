@@ -1,5 +1,47 @@
 let numberOfRounds = 25;
 
+
+let createChart = function() {
+
+    const productNames = [];
+    const productClicks = [];
+
+    for(let i = 0; i < productLineUp.length; i++) {
+        productNames.push(productLineUp[i].name);
+        productClicks.push(productLineUp[i].clicks);
+    }
+
+    const canvas = document.getElementById("chart");
+    const ctx = canvas.getContext('2d');
+
+    const resultsChart = new Chart(ctx,{
+        type: 'bar',
+        data: {
+            labels: productNames,
+            datasets: [{
+                label: "Votes",
+                data: productClicks,
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginsAtZero: true
+                },
+                x: {
+
+                }
+            }
+        }
+    });
+}
+
+
+
+
 let containerDiv = document.getElementById("product-selector");
 let leftProduct = document.getElementById("left-product");
 let rightProduct = document.getElementById("right-product");
@@ -121,7 +163,7 @@ let fillResults = function() {
         line.innerHTML = `<span>${product.name}</span> had ${product.clicks} vote(s), and was seen ${product.timesShown} times.`;
         results.appendChild(line);
     }
-
+    createChart();
 }
 
 renderProducts();
