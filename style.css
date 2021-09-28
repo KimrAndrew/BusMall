@@ -1,0 +1,18 @@
+img {
+    max-width: 30%;
+    max-height: 350px;
+}
+button {
+    display: block;
+    margin: auto;
+}
+
+main {
+    max-width: 960px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+span {
+    color: red;
+}

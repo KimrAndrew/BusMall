@@ -1,3 +1,5 @@
+let numberOfRounds = 25;
+
 let containerDiv = document.getElementById("product-selector");
 let leftProduct = document.getElementById("left-product");
 let rightProduct = document.getElementById("right-product");
@@ -10,6 +12,7 @@ let Product = function(name, url) {
     this.name = name;
     this.url = "assets/" + url;
     this.timesShown = 0;
+    this.clicks = 0;
     productLineUp.push(this);
 }
 
@@ -51,14 +54,44 @@ let selectProductsToDisplay = function() {
 
 let renderProducts = function() {
     let productsToDisplay = selectProductsToDisplay();
-    console.log(productsToDisplay[0].name, productsToDisplay[1].name, productsToDisplay[2].name);
-    leftProduct.src = productsToDisplay[0].url;
-    centerProduct.src = productsToDisplay[1].url;
-    rightProduct.src = productsToDisplay[2].url;
-    console.log(rightProduct.src);
-    console.log(typeof leftProduct.src);
-    console.log("done");  
+    let left = productsToDisplay[0];
+    let center = productsToDisplay[1];
+    let right = productsToDisplay[2];
+
+    leftProduct.src = left.url;
+    leftProduct.name = left.name;
+
+    centerProduct.name = center.name;
+    centerProduct.src = center.url;
+
+    rightProduct.name = right.name;
+    rightProduct.src = right.url;
 }
+
+let imgClickHandler = function(event) {
+    numberOfRounds--;
+    for(let i = 0; i < productLineUp.length; i++) {
+        if(event.target.name == productLineUp[i].name) {
+            productLineUp[i].clicks++;
+        }
+    }
+    if (numberOfRounds >= 0) {
+        renderProducts();
+    } else {
+        containerDiv.class = "selector-hidden"
+        fillResults();
+    }
+}
+
+let buttonClickHandler = function() {
+    numberOfRounds = 0;
+    fillResults();
+}
+
+leftProduct.addEventListener("click", imgClickHandler);
+rightProduct.addEventListener("click", imgClickHandler);
+centerProduct.addEventListener("click", imgClickHandler);
+document.querySelector("button").addEventListener("click", buttonClickHandler);
 
 let Bag = new Product("bag", "bag.jpeg");
 let Banana = new Product("banana", "banana.jpeg");
@@ -66,7 +99,7 @@ let Bathroom = new Product("bathroom","bathroom.jpeg");
 let Boots = new Product("boots", "boots.jpeg");
 let Breakfast = new Product("breakfast", "breakfast.jpeg");
 let Bubblegum = new Product("bubblegum","bubblegum.jpeg");
-let Chair = new Product("chair", "bubblegum.jpeg");
+let Chair = new Product("chair", "chair.jpeg");
 let Cthulhu = new Product("cthulhu", "cthulhu.jpeg");
 let DogDuck = new Product("dog-duck", "dog-duck.jpeg");
 let Dragon = new Product("dragon", "dragon.jpeg");
@@ -80,7 +113,17 @@ let Unicorn = new Product("unicorn", "unicorn.jpeg");
 let WaterCan = new Product("water-can", "water-can.jpeg");
 let WineGlass = new Product("wine-glass", "wine-glass.jpeg");
 
-leftProduct.src = Bag.url;
+let fillResults = function() {
+    let results = document.getElementById("results");
+    for(let i = 0; i < productLineUp.length; i++) {
+        let line = document.createElement("p");
+        let product = productLineUp[i];
+        line.innerHTML = `<span>${product.name}</span> had ${product.clicks} vote(s), and was seen ${product.timesShown} times.`;
+        results.appendChild(line);
+    }
+
+}
+
 renderProducts();
 
 
