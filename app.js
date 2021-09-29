@@ -200,6 +200,18 @@ let fillResults = function() {
 
 renderProducts();
 
+let getProducts = function() {
+    const jsonData = localStorage.getItem('products');
+
+    let parsedData = JSON.parse(jsonData);
+
+    return parsedData;
+}
+
+let saveVotes = function(product) {
+    let stringifiedData = JSON.stringify(product);
+
+}
 
 
 
