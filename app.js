@@ -1,56 +1,16 @@
 let numberOfRounds = 25;
 const numItemsToDisplay = 3;
 
-
-let createChart = function() {
-
-    const productNames = [];
-    const productClicks = [];
-
-    for(let i = 0; i < Product.lineUp.length; i++) {
-        productNames.push(Product.lineUp[i].name);
-        productClicks.push(Product.lineUp[i].clicks);
-    }
-
-    const canvas = document.getElementById("chart");
-    const ctx = canvas.getContext('2d');
-
-    const resultsChart = new Chart(ctx,{
-        type: 'bar',
-        data: {
-            labels: productNames,
-            datasets: [{
-                label: "Votes",
-                data: productClicks,
-                backgroundColor: 'rgb(255, 99, 132)',
-                borderColor: 'rgb(255, 99, 132)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginsAtZero: true
-                },
-                x: {
-
-                }
-            }
-        }
-    });
-}
-
-
-
-
+//========================================================================
+// html selectors
 let containerDiv = document.getElementById("product-selector");
 let leftProduct = document.getElementById("left-product");
 let rightProduct = document.getElementById("right-product");
 let centerProduct = document.getElementById("center-product");
 
-
-let productLineUp = [];
-
+//=======================================================================
+//Product Constructor
+//
 let Product = function(name, url) {
     this.name = name;
     this.url = "assets/" + url;
@@ -62,12 +22,59 @@ Product.lineUp = [];
 Product.current = [];
 Product.previous = [];
 
+
+
+let readProductData = function() {
+
+    let jsonData = localStorage.getItem('productData');
+
+    let parsedData = JSON.parse(jsonData);
+
+    return parsedData;
+}
+
+let saveProductData = function() {
+
+    let stringifiedData = JSON.stringify(Product.lineUp);
+    
+    localStorage.setItem('productData',stringifiedData);
+}
+
+//========================================================================
+// initialize product objects
+//
+let Bag = new Product("bag", "bag.jpeg");
+let Banana = new Product("banana", "banana.jpeg");
+let Bathroom = new Product("bathroom","bathroom.jpeg");
+let Boots = new Product("boots", "boots.jpeg");
+let Breakfast = new Product("breakfast", "breakfast.jpeg");
+let Bubblegum = new Product("bubblegum","bubblegum.jpeg");
+let Chair = new Product("chair", "chair.jpeg");
+let Cthulhu = new Product("cthulhu", "cthulhu.jpeg");
+let DogDuck = new Product("dog-duck", "dog-duck.jpeg");
+let Dragon = new Product("dragon", "dragon.jpeg");
+let Pen = new Product("pen","pen.jpeg");
+let PetSweep = new Product("pet-sweep", "pet-sweep.jpeg");
+let Scissors = new Product("scissors", "scissors.jpeg");
+let Shark = new Product("shark", "shark.jpeg");
+let Sweep = new Product("sweep", "sweep.png");
+let TaunTaun = new Product("tauntaun", "tauntaun.jpeg");
+let Unicorn = new Product("unicorn", "unicorn.jpeg");
+let WaterCan = new Product("water-can", "water-can.jpeg");
+let WineGlass = new Product("wine-glass", "wine-glass.jpeg");
+
+let saveData = readProductData();
+if (saveData.length >= Product.lineUp.length) {
+    Product.lineUp = saveData;
+}
+
+//=========================================================================
+
 let arrayContains = function(array, product) {
     for (let i = 0; i < array.length; i++) {
-        console.log("product " + (i+1) + ": " + array[i].name);
-        console.log("product checked: " + product.name);
+        //console.log("product " + (i+1) + ": " + array[i].name);
+        //console.log("product checked: " + product.name);
         if (array[i].name == product.name) {
-            console.log("same name");
             return true;
         }
     }
@@ -91,17 +98,19 @@ Product.updateCurrent = function() {
         while(
             arrayContains(uniqueSelection, Product.lineUp[productIndex]) 
             || arrayContains(Product.previous, Product.lineUp[productIndex])) {
-                console.log(Product.lineUp[productIndex]);
+                //console.log(Product.lineUp[productIndex]);
                 productIndex = generateRandIndex();
         }
         uniqueSelection.push(Product.lineUp[productIndex]);
     }
 
     Product.current = uniqueSelection;
+    /*
     console.log("previous: ");
     console.log(Product.previous);
     console.log("current: ");
     console.log(uniqueSelection);
+    */
 }
 
 let selectProductsToDisplay = function() {
@@ -167,51 +176,54 @@ rightProduct.addEventListener("click", imgClickHandler);
 centerProduct.addEventListener("click", imgClickHandler);
 document.querySelector("button").addEventListener("click", buttonClickHandler);
 
-let Bag = new Product("bag", "bag.jpeg");
-let Banana = new Product("banana", "banana.jpeg");
-let Bathroom = new Product("bathroom","bathroom.jpeg");
-let Boots = new Product("boots", "boots.jpeg");
-let Breakfast = new Product("breakfast", "breakfast.jpeg");
-let Bubblegum = new Product("bubblegum","bubblegum.jpeg");
-let Chair = new Product("chair", "chair.jpeg");
-let Cthulhu = new Product("cthulhu", "cthulhu.jpeg");
-let DogDuck = new Product("dog-duck", "dog-duck.jpeg");
-let Dragon = new Product("dragon", "dragon.jpeg");
-let Pen = new Product("pen","pen.jpeg");
-let PetSweep = new Product("pet-sweep", "pet-sweep.jpeg");
-let Scissors = new Product("scissors", "scissors.jpeg");
-let Shark = new Product("shark", "shark.jpeg");
-let Sweep = new Product("sweep", "sweep.png");
-let TaunTaun = new Product("tauntaun", "tauntaun.jpeg");
-let Unicorn = new Product("unicorn", "unicorn.jpeg");
-let WaterCan = new Product("water-can", "water-can.jpeg");
-let WineGlass = new Product("wine-glass", "wine-glass.jpeg");
+
 
 let fillResults = function() {
-    let results = document.getElementById("results");
-    for(let i = 0; i < Product.lineUp.length; i++) {
-        let line = document.createElement("p");
-        let product = Product.lineUp[i];
-        line.innerHTML = `<span>${product.name}</span> had ${product.clicks} vote(s), and was seen ${product.timesShown} times.`;
-        results.appendChild(line);
-    }
     createChart();
+    saveProductData();
 }
 
 renderProducts();
 
-let getProducts = function() {
-    const jsonData = localStorage.getItem('products');
+let createChart = function() {
 
-    let parsedData = JSON.parse(jsonData);
+    const productNames = [];
+    const productClicks = [];
 
-    return parsedData;
+    for(let i = 0; i < Product.lineUp.length; i++) {
+        productNames.push(Product.lineUp[i].name);
+        productClicks.push(Product.lineUp[i].clicks);
+    }
+
+    const canvas = document.getElementById("chart");
+    const ctx = canvas.getContext('2d');
+
+    const resultsChart = new Chart(ctx,{
+        type: 'bar',
+        data: {
+            labels: productNames,
+            datasets: [{
+                label: "Votes",
+                data: productClicks,
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginsAtZero: true
+                },
+                x: {
+
+                }
+            }
+        }
+    });
 }
 
-let saveVotes = function(product) {
-    let stringifiedData = JSON.stringify(product);
 
-}
 
 
 
