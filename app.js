@@ -22,7 +22,8 @@ Product.lineUp = [];
 Product.current = [];
 Product.previous = [];
 
-
+//=========================================================================
+// functions for reading and updating save data
 
 let readProductData = function() {
 
@@ -63,7 +64,7 @@ let Unicorn = new Product("unicorn", "unicorn.jpeg");
 let WaterCan = new Product("water-can", "water-can.jpeg");
 let WineGlass = new Product("wine-glass", "wine-glass.jpeg");
 
-let saveData = readProductData();
+let saveData = readProductData() || [];
 if (saveData.length >= Product.lineUp.length) {
     Product.lineUp = saveData;
 }
@@ -102,6 +103,7 @@ Product.updateCurrent = function() {
                 productIndex = generateRandIndex();
         }
         uniqueSelection.push(Product.lineUp[productIndex]);
+        Product.lineUp[productIndex].timesShown++;
     }
 
     Product.current = uniqueSelection;
@@ -162,6 +164,9 @@ let imgClickHandler = function(event) {
     if (numberOfRounds >= 0) {
         renderProducts();
     } else {
+        leftProduct.removeEventListener("click",imgClickHandler);
+        rightProduct.removeEventListener("click",imgClickHandler);
+        centerProduct.removeEventListener("click",imgClickHandler);
         fillResults();
     }
 }
@@ -189,10 +194,12 @@ let createChart = function() {
 
     const productNames = [];
     const productClicks = [];
+    const productViews = [];
 
     for(let i = 0; i < Product.lineUp.length; i++) {
         productNames.push(Product.lineUp[i].name);
         productClicks.push(Product.lineUp[i].clicks);
+        productViews.push(Product.lineUp[i].timesShown);
     }
 
     const canvas = document.getElementById("chart");
@@ -208,6 +215,13 @@ let createChart = function() {
                 backgroundColor: 'rgb(255, 99, 132)',
                 borderColor: 'rgb(255, 99, 132)',
                 borderWidth: 1
+            },{
+                label: "Views",
+                data: productViews,
+                backgroundColor: 'rgb(66,135,245)',
+                borderColor: 'rgb(66,135,245)',
+                borderWidth: 1
+
             }]
         },
         options: {
